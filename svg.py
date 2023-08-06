@@ -1,7 +1,5 @@
 import numpy as np
 from functools import reduce
-from svglib.svglib import svg2rlg
-from reportlab.graphics import renderPM
 import sys
 
 
