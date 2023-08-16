@@ -5,6 +5,18 @@ Python implementation of converting planar diagram codes of knots, links and the
 * png
 * svg
 
+## Interactive mode
+
+Circle Packing             |  Result
+:-------------------------:|:-------------------------:
+![Screenshot Circle Packing](./images/InteractiveCircles.png)  |  ![Screenshot Circle Packing](./images/Interactive.png)
+
+
+``` 
+PD-code:
+V[0,1,2];V[6,8,1];X[11,12,2,14];X[8,20,16,14];X[20,18,22,16];X[10,9,11,22];X[13,0,12,7];X[18,6,13,3];X[9,10,3,7]
+```
+
 ## Installation
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install dependencies.
@@ -15,7 +27,7 @@ pip install -r requirements.txt
 
 ## Planar diagram codes
 
-A dictionary of planar diagram codes is provided in file **codes.py**
+A dictionary of planar diagram codes: **codes.py**
 
 ## Usage
 
