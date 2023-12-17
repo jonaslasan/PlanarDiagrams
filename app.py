@@ -55,7 +55,7 @@ class App:
 
         self.add_slider("offsetX", 0, 100)
         self.add_slider("offsetY", 0, 100)
-        self.add_slider("scale", 0, 2000)
+        self.add_slider("scale", 0, 4000)
 
         # Right side = canvas
         self.canvas = Canvas(self.tk_window, bg="white", height=1000, width=1000)

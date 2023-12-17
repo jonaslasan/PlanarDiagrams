@@ -1,4 +1,4 @@
-from utility import circle_intersection, undercrossing
+from utility import circle_intersection, undercrossing, undercrossing_new
 
 
 def clear_arcs(graph):
@@ -50,20 +50,58 @@ def get_path(graph_copy, start, direction):
             next_node = graph_copy.get_node(next_index)
 
             prev_intersection = circle_intersection(prev_node, current_node)
-            next_intersection = circle_intersection(current_node, next_node)
+            #points.append(prev_intersection)
 
-            before = undercrossing(
+            
+            old = undercrossing(
                 current_node["weightedPosition"].real,
                 current_node["weightedPosition"].imag,
                 prev_intersection[0],
                 prev_intersection[1],
                 current_node["radius"],
             )
-            points.append(before)
+
+            #points.append(center_path[1])
+
+            if entry_index == 1 or entry_index == 3:
+
+                first_ref_index = 'A' + str(current_node["arcs"][min(entry_index, exit_index)])
+                first_ref_node =  graph_copy.get_node(first_ref_index)
+                ref_intersection = circle_intersection(first_ref_node, current_node)
+
+
+                center_path = undercrossing_new(
+                    current_node["weightedPosition"].real,
+                    current_node["weightedPosition"].imag,
+                    ref_intersection[0],
+                    ref_intersection[1],
+                    current_node["radius"],
+                )
+
+                if entry_index < exit_index:
+                    points.append(center_path[0])
+                    points.append(center_path[1])
+                else:
+                    points.append(center_path[3])
+                    points.append(center_path[2])
+                # Break a line before center
+                return points
 
             if entry_index == 0 or entry_index == 2:
                 # Just draw a line through the center
                 # points.append((current_node['weightedPosition'].real, current_node['weightedPosition'].imag))
+
+                center_path = undercrossing_new(
+                    current_node["weightedPosition"].real,
+                    current_node["weightedPosition"].imag,
+                    prev_intersection[0],
+                    prev_intersection[1],
+                    current_node["radius"],
+                )
+
+                #points.append(center_path[0])
+                points.append(center_path[1])
+
                 points.append(
                     (
                         current_node["weightedPosition"].real,
@@ -71,18 +109,15 @@ def get_path(graph_copy, start, direction):
                     )
                 )
 
-                after = undercrossing(
-                    current_node["weightedPosition"].real,
-                    current_node["weightedPosition"].imag,
-                    next_intersection[0],
-                    next_intersection[1],
-                    current_node["radius"],
-                )
-                points.append(after)
+                points.append(center_path[2])
+                #points.append(center_path[3])
+
+                next_intersection = circle_intersection(current_node, next_node)
+                #points.append(next_intersection)
+
+                #points.append(center_path[3])
+                #points.append(center_path[2])
                 pass
-            elif entry_index == 1 or entry_index == 3:
-                # Break a line before center
-                return points
 
         elif current_node["type"] == "arc":
             # Move from arc to vertex
