@@ -34,7 +34,9 @@ class App:
 
         self.control_row = Frame(self.left_panel)
         self.control_row.grid(row=1, column=0, sticky="W", pady=10, padx=10)
-        reset_button = Button(self.control_row, text="Reset", width=20, command=self.reset_values)
+        reset_button = Button(
+            self.control_row, text="Reset", width=20, command=self.reset_values
+        )
         reset_button.grid(row=0, column=0, sticky="W")
         draw_curve_button = Button(
             self.control_row, text="Draw", width=20, command=self.draw_curve
@@ -43,11 +45,25 @@ class App:
 
         # Options
         self.draw_circles_value = BooleanVar()
-        self.draw_circles_checkbox = Checkbutton(self.control_row, text='Draw Circle Packing',variable=self.draw_circles_value, onvalue=True, offvalue=False, command=self.draw)
+        self.draw_circles_checkbox = Checkbutton(
+            self.control_row,
+            text="Draw Circle Packing",
+            variable=self.draw_circles_value,
+            onvalue=True,
+            offvalue=False,
+            command=self.draw,
+        )
         self.draw_circles_checkbox.grid(row=1, column=0, sticky="W")
 
         self.draw_path_points_value = BooleanVar()
-        self.draw_path_points_checkbox = Checkbutton(self.control_row, text='Draw Path Points',variable=self.draw_path_points_value, onvalue=True, offvalue=False, command=self.draw)
+        self.draw_path_points_checkbox = Checkbutton(
+            self.control_row,
+            text="Draw Path Points",
+            variable=self.draw_path_points_value,
+            onvalue=True,
+            offvalue=False,
+            command=self.draw,
+        )
         self.draw_path_points_checkbox.grid(row=2, column=0, sticky="W")
 
         for key in ["a0", "a1", "b0", "b1", "c0", "c1", "d0", "d1"]:
@@ -157,7 +173,7 @@ class App:
             scaled_points = [
                 (x * scale + offsetX, y * scale + offsetY) for (x, y) in path
             ]
-            self.canvas.create_line(scaled_points, fill="black", smooth=True, width=2)
+            self.canvas.create_line(scaled_points, fill="black", smooth=True, width=3)
 
             if self.draw_path_points_value.get():
                 radius = 0.002 * scale

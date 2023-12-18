@@ -1,7 +1,4 @@
-from utility import circle_intersection, undercrossing_pivot, overcrossing_pivot
-
-CROSSING_GAP = 0.02
-CROSSING_PIVOT_GAP = 0.05
+from utility import circle_intersection, undercrossing_pivot
 
 
 def clear_arcs(graph):
@@ -10,8 +7,15 @@ def clear_arcs(graph):
         node["visited"] = False
 
 
-# Return a set of paths representing connected curves on the final image
 def get_paths(graph):
+    """
+    get_paths Return a set of paths representing connected curves on the final image
+
+    :graph: planar graph representation
+    :perpendicular: whether to draw perpendicular lines at crossings
+    :return
+    """
+
     clear_arcs(graph)
     paths = []
 
@@ -22,8 +26,8 @@ def get_paths(graph):
         if arc_node["visited"]:
             continue
 
-        path_one = get_path(graph, arc_index, 0)[1:]
-        path_two = get_path(graph, arc_index, 1)
+        path_one = get_path_perpendicular(graph, arc_index, 0)[1:]
+        path_two = get_path_perpendicular(graph, arc_index, 1)
 
         joined_path = list(reversed(path_one)) + path_two
         paths.append(joined_path)
@@ -32,7 +36,8 @@ def get_paths(graph):
 
 
 # Go in one direction until you hit a vertex or original arc
-def get_path(graph_copy, start, direction):
+# perpendicular
+def get_path_perpendicular(graph_copy, start, direction):
     prev_index = None
     prev_node = None
 
@@ -52,70 +57,48 @@ def get_path(graph_copy, start, direction):
             next_index = "A" + str(current_node["arcs"][exit_index])
             next_node = graph_copy.get_node(next_index)
 
-            prev_intersection = circle_intersection(prev_node, current_node)
-            next_intersection = circle_intersection(current_node, next_node)
+            # Align inner cross with first arc intersection
+            ref_node_index = "A" + str(current_node["arcs"][0])
+            ref_node = graph_copy.get_node(ref_node_index)
+            ref_node_intersection = circle_intersection(ref_node, current_node)
+
+            outter_circle = undercrossing_pivot(
+                current_node["weightedPosition"].real,
+                current_node["weightedPosition"].imag,
+                ref_node_intersection[0],
+                ref_node_intersection[1],
+                current_node["radius"],
+                0.035,
+            )
+
+            inner_circle = undercrossing_pivot(
+                current_node["weightedPosition"].real,
+                current_node["weightedPosition"].imag,
+                ref_node_intersection[0],
+                ref_node_intersection[1],
+                current_node["radius"],
+                0.02,
+            )
 
             if entry_index == 1 or entry_index == 3:
-                # UNDERCROSSING
-
-                # Do not pivot in very small circles
-                if current_node["radius"] < CROSSING_PIVOT_GAP:
-                    points.append(prev_intersection)
-                    return points
-
-                first_ref_index = "A" + str(current_node["arcs"][1])
-                first_ref_node = graph_copy.get_node(first_ref_index)
-                ref_intersection = circle_intersection(first_ref_node, current_node)
-
-                outter_pivots = undercrossing_pivot(
-                    current_node["weightedPosition"].real,
-                    current_node["weightedPosition"].imag,
-                    ref_intersection[0],
-                    ref_intersection[1],
-                    CROSSING_PIVOT_GAP,
-                )
-
-                inner_pivots = undercrossing_pivot(
-                    current_node["weightedPosition"].real,
-                    current_node["weightedPosition"].imag,
-                    ref_intersection[0],
-                    ref_intersection[1],
-                    CROSSING_GAP,
-                )
-
-                points.append(outter_pivots[entry_index])
-                points.append(inner_pivots[entry_index])
+                points.append(outter_circle[entry_index])
+                points.append(inner_circle[entry_index])
 
                 # Break a line before center
                 return points
 
             if entry_index == 0 or entry_index == 2:
-                # OVERCROSSING
-
-                center_path_before = overcrossing_pivot(
-                    current_node["weightedPosition"].real,
-                    current_node["weightedPosition"].imag,
-                    prev_intersection[0],
-                    prev_intersection[1],
-                )
-
-                points.append(center_path_before)
-
+                # Just draw a line through the center
+                points.append(outter_circle[entry_index])
+                points.append(inner_circle[entry_index])
                 points.append(
                     (
                         current_node["weightedPosition"].real,
                         current_node["weightedPosition"].imag,
                     )
                 )
-
-                center_path_after = overcrossing_pivot(
-                    current_node["weightedPosition"].real,
-                    current_node["weightedPosition"].imag,
-                    next_intersection[0],
-                    next_intersection[1],
-                )
-
-                points.append(center_path_after)
+                points.append(inner_circle[exit_index])
+                points.append(outter_circle[exit_index])
 
         elif current_node["type"] == "arc":
             # Move from arc to vertex

@@ -3,14 +3,9 @@ import math
 
 # crossing center -> (x1, y1)
 # crossing & arc intersection -> (x2, y2)
-def undercrossing(x1, y1, x2, y2, radius, gap=0.03):
+def overcrossing_pivot(x1, y1, x2, y2, gap=0.02):
     vector = (x2 - x1, y2 - y1)
     magnitude = math.sqrt(vector[0] ** 2 + vector[1] ** 2)
-
-    # Gap can't be bigger than the crossing circle itself
-    # For smaller crossing circles intersections are the end points
-    if radius <= gap:
-        return (x1 + vector[0], y1 + vector[1])
 
     # In bigger crossing circles move 'gap' away from the center
     unit_vector = (vector[0] / magnitude, vector[1] / magnitude)
@@ -18,37 +13,33 @@ def undercrossing(x1, y1, x2, y2, radius, gap=0.03):
 
     return destination
 
+
 # crossing center -> (x1, y1)
 # crossing & arc intersection -> (x2, y2)
-def undercrossing_new(x1, y1, x2, y2, radius, gap=0.03, pivot=0.075):
+def undercrossing_pivot(x1, y1, x2, y2, gap=0.02):
     vector = (x2 - x1, y2 - y1)
     magnitude = math.sqrt(vector[0] ** 2 + vector[1] ** 2)
 
-    # Gap can't be bigger than the crossing circle itself
-    # For smaller crossing circles intersections are the end points
-    if radius <= gap:
-        return (x1 + vector[0], y1 + vector[1])
+    unit_vector_0 = (vector[0] / magnitude, vector[1] / magnitude)
+    unit_vector_1 = (unit_vector_0[1] * -1, unit_vector_0[0])
+    unit_vector_2 = (unit_vector_0[0] * -1, unit_vector_0[1] * -1)
+    unit_vector_3 = (unit_vector_0[1], unit_vector_0[0] * -1)
 
-    # In bigger crossing circles move 'gap' away from the center
-    unit_vector = (vector[0] / magnitude, vector[1] / magnitude)
-    unit_vector_opposite = (vector[0] / magnitude * -1, vector[1] / magnitude * -1)
+    destination_0 = (x1 + unit_vector_3[0] * gap, y1 + unit_vector_3[1] * gap)
+    destination_1 = (x1 + unit_vector_0[0] * gap, y1 + unit_vector_0[1] * gap)
+    destination_2 = (x1 + unit_vector_1[0] * gap, y1 + unit_vector_1[1] * gap)
+    destination_3 = (x1 + unit_vector_2[0] * gap, y1 + unit_vector_2[1] * gap)
 
-    destination = (x1 + unit_vector[0] * gap, y1 + unit_vector[1] * gap)
-    destination2 = (x1 + unit_vector[0] * pivot, y1 + unit_vector[1] * pivot)
+    return [destination_0, destination_1, destination_2, destination_3]
 
-    destination_opposite = (x1 + unit_vector_opposite[0] * gap, y1 + unit_vector_opposite[1] * gap)
-    destination_opposite2 = (x1 + unit_vector_opposite[0] * pivot, y1 + unit_vector_opposite[1] * pivot)
 
-    return [destination2, destination, destination_opposite, destination_opposite2]
-
-def cross(x,y, gap=0.03):
+def cross(x, y, gap=0.03):
     top = (x, y + gap)
     bottom = (x, y - gap)
     left = (x - gap, y)
     right = (x + gap, y)
 
-    return(top, bottom, left, right)
-
+    return (top, bottom, left, right)
 
 
 def circle_intersection(node1, node2):

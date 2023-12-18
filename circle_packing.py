@@ -277,9 +277,7 @@ class CirclePack:
         # For each circle calculate an average position from its center and all neighbor intersections
         for index in self.graph.get_keys():
             node = self.graph.get_node(index)
-
             points = [(node["position"].real, node["position"].imag)]
-
             neighbors = self.graph.get_neighbours(index)
 
             for neighbor in neighbors:
